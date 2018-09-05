@@ -11,8 +11,10 @@
   },
   "scripts": {
     "build": "webpack",
-    "test": "jest --coverage --coverageReporters=text-lcov | coveralls",
-    "test:ci": "npm run lint && npm run test",
+    "test": "jest",
+    "test:ci": "npm run lint && jest --coverage --coverageReporters=text-lcov | coveralls",
+    "test:watch": "jest --watch --coverage",
+    "test:cov": "jest --coverage",
     "lint": "eslint ."
   },
   "devDependencies": {
