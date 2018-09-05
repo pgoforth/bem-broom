@@ -11,10 +11,8 @@
   },
   "scripts": {
     "build": "webpack",
-    "test": "jest",
+    "test": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "test:ci": "npm run lint && npm run test",
-    "test:watch": "jest --watch --coverage",
-    "test:cov": "jest --coverage",
     "lint": "eslint ."
   },
   "devDependencies": {
@@ -29,6 +27,7 @@
     "babel-plugin-webpack-alias": "^2.1.2",
     "classnames": "^2.2.5",
     "copy-webpack-plugin": "^4.5.2",
+    "coveralls": "^3.0.2",
     "cross-env": "^4.0.0",
     "css-loader": "^1.0.0",
     "eslint": "^4.7.2",
