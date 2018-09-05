@@ -1,0 +1,4 @@
+title: bem-broom
+description: Utility for generating and parsing BEM class names using JS objects
+repository: https://github.com/pgoforth/bem-broom
+baseurl: "/bem-broom"
