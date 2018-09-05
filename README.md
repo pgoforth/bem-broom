@@ -8,10 +8,6 @@
   </p>
 </p>
 
----
-
-##Status
-
 [![Build Status](https://travis-ci.org/pgoforth/bem-broom.svg?branch=master)](https://travis-ci.org/pgoforth/bem-broom)
 [![Coverage Status](https://coveralls.io/repos/pgoforth/bem-broom/badge.png)](https://coveralls.io/r/pgoforth/bem-broom)
 
