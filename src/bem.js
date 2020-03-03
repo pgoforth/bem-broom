@@ -1,13 +1,6 @@
 import hyphenated from './syntax/hyphenated';
 
-const bem = ({
-    block,
-    element,
-    modifiers = {},
-    prefix = '',
-    syntax = {},
-    verbose = false,
-}) => {
+const bem = ({ block, element, modifiers = {}, prefix = '', syntax = {}, verbose = false }) => {
     if (!block && !element) {
         throw new Error('You must specify a block or an element when using BEM syntax');
     }
@@ -17,69 +10,81 @@ const bem = ({
         ...hyphenated,
         ...syntax,
     };
+    const {
+        block: blockSeparator,
+        space: spaceSeparator,
+        modifier: modifierSeparator,
+        value: valueSeparator,
+    } = separators;
 
     /*
      *  There are instances where class prefix is imported from a SASS file.
      *  In these cases, upon import, the single (or double) quotes remain.
      *  We must remove them before use.
      */
-    const classPrefix = prefix
-        ? prefix.replace(/^['"]/, '').replace(/['"]$/, '')
-        : '';
+    const classPrefix = prefix ? prefix.replace(/^['"]/, '').replace(/['"]$/, '') : '';
 
     if (block) {
-        classes.push(!element
-            ? `${classPrefix}${block}`
-            : `${classPrefix}${block}${separators.block}${element}`
+        classes.push(
+            !element
+                ? `${classPrefix}${block}`
+                : `${classPrefix}${block}${blockSeparator}${element}`
         );
 
-        const blockModifierKeys = modifiers.block
-            ? Object.keys(modifiers.block)
-            : [];
+        const blockModifiers = modifiers.block ? Object.entries(modifiers.block) : [];
 
-        blockModifierKeys.forEach((key) => {
-            const value = modifiers.block[key];
-            const isBoolean = value === undefined || value === !!value;
+        blockModifiers.forEach(([key, val]) => {
+            const value = val && val !== '' ? val : false;
+            const isBoolean = value === 'true' || value === !!value;
             if (isBoolean) {
                 if (value) {
-                    const className = `${classPrefix}${block}${separators.modifier}${key}`;
+                    const className = `${classPrefix}${block}${modifierSeparator}${key}`;
                     classes.push(className);
-                    verbose && element && classes.push(`${className}${separators.block}${element}`);
+                    verbose && element && classes.push(`${className}${blockSeparator}${element}`);
                 }
             } else {
-                const className = `${classPrefix}${block}${separators.modifier}${key}${separators.value}${value}`;
+                const className = `${classPrefix}${block}${modifierSeparator}${key}${valueSeparator}${value}`;
                 classes.push(className);
-                verbose && element && classes.push(`${className}${separators.block}${element}`);
+                verbose && element && classes.push(`${className}${blockSeparator}${element}`);
             }
-        })
+        });
     }
     if (element) {
         classes.push(`${classPrefix}${element}`);
 
-        const elementModifierKeys = modifiers.element
-            ? Object.keys(modifiers.element)
-            : [];
+        const elementModifiers = modifiers.element ? Object.entries(modifiers.element) : [];
 
-        elementModifierKeys.forEach((key) => {
-            const value = modifiers.element[key];
-            const isBoolean = value === undefined || value === !!value;
+        elementModifiers.forEach(([key, val]) => {
+            const value = val && val !== '' ? val : false;
+            const isBoolean = value === 'true' || value === !!value;
             if (isBoolean) {
                 if (value) {
-                    classes.push(`${classPrefix}${element}${separators.modifier}${key}`);
-                    verbose && block && classes.push(`${classPrefix}${block}${separators.block}${element}${separators.modifier}${key}`);
+                    classes.push(`${classPrefix}${element}${modifierSeparator}${key}`);
+                    verbose &&
+                        block &&
+                        classes.push(
+                            `${classPrefix}${block}${blockSeparator}${element}${modifierSeparator}${key}`
+                        );
                 }
             } else {
-                classes.push(`${classPrefix}${element}${separators.modifier}${key}${separators.value}${value}`);
-                verbose && block && classes.push(`${classPrefix}${block}${separators.block}${element}${separators.modifier}${key}${separators.value}${value}`);
+                classes.push(
+                    `${classPrefix}${element}${modifierSeparator}${key}${valueSeparator}${value}`
+                );
+                verbose &&
+                    block &&
+                    classes.push(
+                        `${classPrefix}${block}${blockSeparator}${element}${modifierSeparator}${key}${valueSeparator}${value}`
+                    );
             }
-        })
+        });
     }
 
-    return classes.map((className) => className
-        .toString()
-        .replace(/\s\s+/g, ' ')
-        .replace(/[\s!"#$%&'()*+,./:;<=>?@[\\\]^`{|}~]/g, separators.space)
+    return classes.map(className =>
+        className
+            .toString()
+            .replace(/\s\s+/g, ' ')
+            .replace(/[\s!"#$%&'()*+,./:;<=>?@[\\\]^`{|}~]/g, spaceSeparator)
     );
-}
+};
 
 export default bem;

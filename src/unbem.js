@@ -1,9 +1,6 @@
 import hyphenated from './syntax/hyphenated';
 
-const unbem = (passedClasses, {
-    prefix = '',
-    syntax = {},
-} = {}) => {
+const unbem = (passedClasses, { prefix = '', syntax = {} } = {}) => {
     let classes = passedClasses;
 
     if (typeof passedClasses === 'string') {
@@ -40,7 +37,7 @@ const unbem = (passedClasses, {
 
         if (!block) return bemObjects;
 
-        const bem = {block};
+        const bem = { block };
         const blockModifier = parsedBlock[2];
 
         const element = parsedElement ? parsedElement[1] : undefined;
@@ -60,10 +57,7 @@ const unbem = (passedClasses, {
         }
 
         if (!element) {
-            return [
-                ...bemObjects,
-                bem,
-            ];
+            return [...bemObjects, bem];
         }
 
         bem.element = element;
@@ -72,7 +66,7 @@ const unbem = (passedClasses, {
             bem.modifiers = bem.modifiers || {};
             bem.modifiers.element = {
                 [elementModifier]: parsedElement[3] || true,
-            }
+            };
             lookup[element] = lookup[element] || {};
             lookup[element] = {
                 ...lookup[element],
@@ -80,30 +74,26 @@ const unbem = (passedClasses, {
             };
         }
 
-        return [
-            ...bemObjects,
-            bem,
-        ];
+        return [...bemObjects, bem];
     }, []);
 
     return allClasses.reduce((merged, bem) => {
-        const foundIndex = merged.findIndex(item => item.block === bem.block || (item.element === bem.block));
+        const foundIndex = merged.findIndex(
+            item => item.block === bem.block || item.element === bem.block
+        );
 
-        if(bem.element && lookup[bem.element]) {
+        if (bem.element && lookup[bem.element]) {
             // We can assume that the element is merged with the block
 
             if (Object.keys(lookup[bem.element]).length > 0) {
                 bem.modifiers = bem.modifiers || {};
                 bem.modifiers.element = {
                     ...(!bem.modifiers.element ? {} : bem.modifiers.element),
-                    ...lookup[bem.element]
+                    ...lookup[bem.element],
                 };
             }
 
-            if (foundIndex < 0) return [
-                ...merged,
-                bem,
-            ];
+            if (foundIndex < 0) return [...merged, bem];
 
             const found = merged[foundIndex];
             found.element = bem.element;
@@ -115,25 +105,17 @@ const unbem = (passedClasses, {
                         ...(!found.modifiers.element ? {} : found.modifiers.element),
                         ...bem.modifiers.element,
                     },
-                }
+                };
             }
 
-            return [
-                ...merged.slice(0, foundIndex),
-                found,
-                ...merged.slice(foundIndex + 1),
-            ];
+            return [...merged.slice(0, foundIndex), found, ...merged.slice(foundIndex + 1)];
         }
 
-        if (foundIndex < 0) return [
-            ...merged,
-            bem,
-        ];
+        if (foundIndex < 0) return [...merged, bem];
 
         const found = merged[foundIndex];
 
         if (Object.keys(lookup[bem.block]).length) {
-
             const modifierType = found.element === bem.block ? 'element' : 'block';
 
             found.modifiers = {
@@ -142,15 +124,11 @@ const unbem = (passedClasses, {
                     ...(!found.modifiers[modifierType] ? {} : found.modifiers[modifierType]),
                     ...lookup[bem.block],
                 },
-            }
+            };
         }
 
-        return [
-            ...merged.slice(0, foundIndex),
-            found,
-            ...merged.slice(foundIndex + 1),
-        ];
-    }, [])
-}
+        return [...merged.slice(0, foundIndex), found, ...merged.slice(foundIndex + 1)];
+    }, []);
+};
 
-export default unbem
+export default unbem;

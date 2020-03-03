@@ -2,7 +2,7 @@ const path = require('path')
 
 module.exports = {
     bail: true,
-    entry: ['./index.js'],
+    entry: [path.join(__dirname, 'src/index.js')],
     output: {
         path: path.join(__dirname, 'dist'),
         filename: 'bem-broom.js',
@@ -10,6 +10,9 @@ module.exports = {
         libraryTarget: 'umd',
     },
     mode: 'production',
+    optimization: {
+        minimize: true,
+    },
     module: {
         rules: [
             {

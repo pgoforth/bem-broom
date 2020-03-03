@@ -1,4 +1,31 @@
 language: node_js
 node_js:
-  - "6"
-script: npm run test:ci
+- '12.13'
+- node
+stages:
+  - lint
+  - test
+  - build
+  - name: deploy
+    if: branch = master
+
+jobs:
+  include:
+    - stage: lint
+      node_js: node
+      script: npm run lint
+    - stage: test
+      node_js: node
+      script: npm run test:ci && rm -rf ./coverage
+    - stage: build
+      node_js: node
+      script: npm run build
+    - stage: deploy
+      node_js: "12"
+      script: echo "Deploying to npm ..."
+      deploy:
+        provider: npm
+        email: preston.goforth@gmail.com
+        api_key:
+          secure: MW2iLHAbg7E4ky5do+P4dRtTFDYnTiDnmGKu3doDf3QcG9RI9lc3mKGDMEuTLbks4STebku67luY0C8xA6m6w5vHvr9t1DUFjrlx3GcjhOn1Gf2GCkmsi2Ch7jET1yOkkCmxjsiWWafN2pe9z72nJnPCtj5JbWxstATyAS6gf74hJYKu5CCz/lGatYnDKIydsTUySPDlfNWr6xQm01zAf3SJBEZclNlwdFLCq9j7xFWtJ1DNyeK2OKBn0nocchAn68DOWr5TJscsLezC5DUWoxOkdvzNg2lK4OLWRVHioZf+Nd4Hw3gHGILie9aiL3Gi2gNh8KN8s93COUMC52tQumCuv9qJnOWmcEtvvwWY8m0492e6R1XJ83XFGHgsTTxSZdAXDOBhD0W2G/Ch6b2jlfPny/rxoFsOGX0D9+jqCXIFDYn3BdRL5av41HPJ4jgcAcenbe8O9CGulHX9z3rWisqbIBO1AL9/4Kk1Yzo2HtY9BAPahs7Sc6Kmu6a6bCUn7tYdoXkuOhSp5/YwxRVPcv1YOmbLyDBD9F1o4OaroVxzOecbqL5IUQLAoYyZAQqgeVr8Du3od05f3AgrQofK/6MxrSZFY5QV73JjC4um+8MH0Fap5VWszLneksOdcz1Tv+T+MCcpadFCiILuPTWEMo4p+EpTaA8wCfXxf4TiQGE=
+
