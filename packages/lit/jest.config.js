@@ -1,0 +1,14 @@
+export default {
+	coverageReporters: ['json-summary', 'text'],
+	displayName: 'lit',
+	testEnvironment: 'jsdom',
+	rootDir: './',
+	testMatch: ['<rootDir>/src/**/__tests__/**/*.js'],
+	transform: {
+		'\\.[jt]sx?$': 'babel-jest',
+	},
+	// Lit and @lit/* ship as ESM; let babel-jest transform them (don't ignore).
+	transformIgnorePatterns: [
+		'/node_modules/(?!(lit|lit-html|lit-element|@lit)/)',
+	],
+};

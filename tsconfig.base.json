@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+		"target": "es2022",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"allowJs": true,
+		"checkJs": true,
+		"declaration": true,
+		"declarationMap": false,
+		"emitDeclarationOnly": true,
+		"inlineSourceMap": false,
+		"lib": ["ES2022"],
+		"maxNodeModuleJsDepth": 0,
+		"removeComments": true,
+		"resolveJsonModule": true,
+		"sourceMap": false,
+		"strictNullChecks": true,
+		"stripInternal": true
+	}
+}

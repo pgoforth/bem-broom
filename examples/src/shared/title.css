@@ -1,0 +1,51 @@
+/* Shared by every demo — see tokens.css. */
+.title {
+	display: block;
+}
+
+.title--variant_h1 {
+	font-size: 2em;
+	font-weight: bold;
+	margin: 0.67em 0;
+}
+.title--variant_h2 {
+	font-size: 1.5em;
+	font-weight: bold;
+	margin: 0.83em 0;
+}
+.title--variant_h3 {
+	font-size: 1.17em;
+	font-weight: bold;
+	margin: 1em 0;
+}
+.title--variant_h4 {
+	font-size: 1em;
+	font-weight: bold;
+	margin: 1.33em 0;
+}
+.title--variant_h5 {
+	font-size: 0.83em;
+	font-weight: bold;
+	margin: 1.67em 0;
+}
+.title--variant_h6 {
+	font-size: 0.67em;
+	font-weight: bold;
+	margin: 2.33em 0;
+}
+
+.title:first-of-type {
+	margin-top: 0;
+}
+
+.app--mode_dark .title {
+	&::before {
+		content: '🌙 ';
+	}
+}
+
+.app--mode_light .title {
+	&::before {
+		content: '☀️ ';
+	}
+}

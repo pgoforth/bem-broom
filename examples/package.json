@@ -1,0 +1,27 @@
+{
+	"name": "@bem-broom/examples",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"description": "Runnable POCs for @bem-broom/core, /react, /webcomponents and /lit",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview"
+	},
+	"devDependencies": {
+		"@babel/core": "^8.0.1",
+		"@babel/plugin-proposal-decorators": "^8.0.0",
+		"@babel/preset-env": "^8.0.2",
+		"@bem-broom/core": "file:../packages/core",
+		"@bem-broom/lit": "file:../packages/lit",
+		"@bem-broom/react": "file:../packages/react",
+		"@bem-broom/webcomponents": "file:../packages/webcomponents",
+		"@lit/context": "^1.1.0",
+		"@vitejs/plugin-react": "^5.0.0",
+		"lit": "^3.2.0",
+		"react": "^19.2.7",
+		"react-dom": "^19.2.7",
+		"vite": "^6.0.0"
+	}
+}

@@ -1,0 +1,18 @@
+/* Shared by every demo — see tokens.css. */
+.card {
+	border-radius: 0.5rem;
+	border-style: solid;
+	border-width: 1px;
+	display: block;
+	padding: 1.5rem 2rem;
+}
+
+.app--mode_dark .card {
+	background-color: var(--color-paper-dark);
+	color: var(--color-paper-text-dark);
+}
+
+.app--mode_light .card {
+	background-color: var(--color-paper-light);
+	color: var(--color-paper-text-light);
+}

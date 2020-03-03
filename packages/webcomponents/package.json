@@ -1,0 +1,59 @@
+{
+	"name": "@bem-broom/webcomponents",
+	"version": "0.1.0",
+	"type": "module",
+	"description": "Custom-element helpers for building BEM class names, powered by @bem-broom/core",
+	"sideEffects": false,
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.cjs"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist",
+		"LICENSE",
+		"package.json"
+	],
+	"author": "Preston Goforth",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pgoforth/bem-broom.git",
+		"directory": "packages/webcomponents"
+	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
+	},
+	"scripts": {
+		"prepack": "npm run build",
+		"build": "rimraf ./dist && npm run build:cjs && npm run build:esm && tsc",
+		"build:cjs": "NODE_ENV=production BABEL_ENV=commonjs babel src --out-dir dist --out-file-extension .cjs --ignore \"**/*.test.js,**/__tests__/**,**/*.spec.js\"",
+		"build:esm": "NODE_ENV=production BABEL_ENV=esm babel src --out-dir dist --out-file-extension .mjs --ignore \"**/*.test.js,**/__tests__/**,**/*.spec.js\"",
+		"test": "jest",
+		"test:cov": "jest --coverage"
+	},
+	"dependencies": {
+		"@bem-broom/core": "^0.1.0",
+		"@lit/context": "^1.1.0"
+	},
+	"devDependencies": {
+		"@babel/cli": "^8.0.1",
+		"@babel/core": "^8.0.1",
+		"@babel/plugin-proposal-decorators": "^8.0.0",
+		"@babel/plugin-transform-modules-commonjs": "^8.0.1",
+		"@babel/preset-env": "^8.0.2",
+		"babel-jest": "^30.4.1",
+		"babel-plugin-replace-import-extension": "^1.1.5",
+		"jest": "^30.4.2",
+		"jest-environment-jsdom": "^30.4.1",
+		"rimraf": "^6.1.3",
+		"typescript": "^6.0.3"
+	}
+}

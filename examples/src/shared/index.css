@@ -1,0 +1,27 @@
+body {
+	align-items: stretch;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	font-family: system-ui, sans-serif;
+	height: 100vh;
+	justify-content: stretch;
+	margin: 0 auto;
+	max-width: 40rem;
+	padding: 0;
+}
+body > * {
+	margin: 1rem;
+}
+li {
+	margin: 0.5rem 0;
+}
+code {
+	background: #f0f0f0;
+	padding: 0.1rem 0.3rem;
+	border-radius: 3px;
+}
+#app {
+	flex: 1;
+	margin: 0;
+}

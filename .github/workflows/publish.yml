@@ -1,0 +1,104 @@
+name: Publish
+
+# Releases are explicit: push a version tag (e.g. `v0.1.0`) — or run manually
+# from Actions → Publish → "Run workflow". Each package is published only if its
+# exact version isn't already on npm, so a run publishes just what was bumped and
+# is a no-op otherwise.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+# Prevent overlapping publishes (e.g. rapid re-runs) from racing.
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write # required for npm provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          registry-url: "https://registry.npmjs.org"
+      # On a tag push, fail fast unless the tag matches the version being
+      # released (checked against @bem-broom/core, the shared version line).
+      # Skipped for manual runs, which have no tag.
+      - name: Verify tag matches package version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          VERSION=$(node -p "require('./packages/core/package.json').version")
+          if [ "${TAG}" != "${VERSION}" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match @bem-broom/core version ${VERSION}."
+            exit 1
+          fi
+          echo "Tag ${GITHUB_REF_NAME} matches version ${VERSION}."
+      - name: Install Modules
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm run test:cov
+      # Publish each package only if its exact version isn't already on npm, in
+      # dependency order: core → webcomponents → react → lit (lit depends on both
+      # core and webcomponents), so a consumer never resolves a package before
+      # the dependencies it needs are on the registry.
+      - name: Publish @bem-broom/core
+        run: |
+          NAME=$(node -p "require('./packages/core/package.json').name")
+          VERSION=$(node -p "require('./packages/core/package.json').version")
+          if npm view "${NAME}@${VERSION}" version > /dev/null 2>&1; then
+            echo "${NAME}@${VERSION} is already published; skipping."
+          else
+            echo "Publishing ${NAME}@${VERSION}..."
+            npm publish --workspace "${NAME}"
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish @bem-broom/webcomponents
+        run: |
+          NAME=$(node -p "require('./packages/webcomponents/package.json').name")
+          VERSION=$(node -p "require('./packages/webcomponents/package.json').version")
+          if npm view "${NAME}@${VERSION}" version > /dev/null 2>&1; then
+            echo "${NAME}@${VERSION} is already published; skipping."
+          else
+            echo "Publishing ${NAME}@${VERSION}..."
+            npm publish --workspace "${NAME}"
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish @bem-broom/react
+        run: |
+          NAME=$(node -p "require('./packages/react/package.json').name")
+          VERSION=$(node -p "require('./packages/react/package.json').version")
+          if npm view "${NAME}@${VERSION}" version > /dev/null 2>&1; then
+            echo "${NAME}@${VERSION} is already published; skipping."
+          else
+            echo "Publishing ${NAME}@${VERSION}..."
+            npm publish --workspace "${NAME}"
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish @bem-broom/lit
+        run: |
+          NAME=$(node -p "require('./packages/lit/package.json').name")
+          VERSION=$(node -p "require('./packages/lit/package.json').version")
+          if npm view "${NAME}@${VERSION}" version > /dev/null 2>&1; then
+            echo "${NAME}@${VERSION} is already published; skipping."
+          else
+            echo "Publishing ${NAME}@${VERSION}..."
+            npm publish --workspace "${NAME}"
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

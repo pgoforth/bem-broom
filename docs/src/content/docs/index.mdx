@@ -1,0 +1,44 @@
+---
+title: bem-broom
+description: Utility for generating and parsing BEM class names using JS objects
+template: splash
+hero:
+  tagline: Generate and parse BEM class names from plain JavaScript objects — tiny, dependency-free, with framework helpers on top.
+  image:
+    file: ../../assets/bem-broom.png
+  actions:
+    - text: Getting started
+      link: /bem-broom/getting-started/
+      icon: right-arrow
+    - text: View on GitHub
+      link: https://github.com/pgoforth/bem-broom
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+	<Card title="@bem-broom/core" icon="seti:javascript">
+		Framework-agnostic BEM class-name builder and parser. Zero runtime
+		dependencies, dual polyfill-free ES2021/ES2015 builds. [Read the
+		guide](/bem-broom/core/guides/) or the [API
+		reference](/bem-broom/core/api/).
+	</Card>
+	<Card title="@bem-broom/react" icon="seti:react">
+		A `useBem` hook and `withBem` HOC with context-based block re-rooting.
+		[Read the guide](/bem-broom/react/guides/) or the [API
+		reference](/bem-broom/react/api/).
+	</Card>
+	<Card title="@bem-broom/webcomponents" icon="puzzle">
+		A framework-free `@bem` decorator and `BemElement` mixin for plain custom
+		elements — modifiers driven by attributes, block re-rooting via the Context
+		Protocol. [Read the guide](/bem-broom/webcomponents/guides/) or the [API
+		reference](/bem-broom/webcomponents/api/).
+	</Card>
+	<Card title="@bem-broom/lit" icon="seti:html">
+		A standard-decorator `@bem` and `BemController` for Lit, with the
+		framework-agnostic Context Protocol under the hood. [Read the
+		guide](/bem-broom/lit/guides/) or the [API reference](/bem-broom/lit/api/).
+	</Card>
+</CardGrid>

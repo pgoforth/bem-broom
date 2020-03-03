@@ -1,0 +1,23 @@
+/*
+ * Shared design tokens for every bem-broom demo.
+ *
+ * The whole point: bem-broom emits the *same* BEM class names (`app--mode_light`,
+ * `card__title`, `badge--tone_info`, …) in core, react, webcomponents and lit —
+ * so this one set of stylesheets (tokens + card + title + badge) styles all
+ * four demos unchanged. The class names are framework-agnostic, so the CSS is
+ * too. Every demo imports these same files from `src/shared/`.
+ */
+:root {
+	--color-paper-light: #ffffff;
+	--color-paper-text-light: #000000;
+	--color-paper-dark: #1e1e1e;
+	--color-paper-text-dark: #ffffff;
+	--color-info-light: #d0f0fd;
+	--color-info-text-light: #055160;
+	--color-success-light: #d4edda;
+	--color-success-text-light: #155724;
+	--color-info-dark: #0c2d3e;
+	--color-info-text-dark: #a8e1f7;
+	--color-success-dark: #1b3a1b;
+	--color-success-text-dark: #c3e6cb;
+}

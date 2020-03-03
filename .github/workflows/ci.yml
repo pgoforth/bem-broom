@@ -1,0 +1,116 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+      - next
+    paths:
+      - "packages/**/src/**/*.js"
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lint-test-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+      - name: Install Modules
+        run: npm ci
+      - name: Linting
+        run: npm run lint
+      # Build before tests: framework packages resolve @bem-broom/core from its dist.
+      - name: Build
+        run: npm run build
+      - name: Run Tests
+        run: npm run test:cov
+      - name: Bundle Size
+        run: npm run size
+      - name: Unit Test Coverage Comment
+        if: github.event_name == 'pull_request'
+        uses: MishaKav/jest-coverage-comment@main
+        with:
+          title: PR Test Report (@bem-broom/core)
+          coverage-title: Coverage by File
+          coverage-path: ./packages/core/coverage/coverage.txt
+          coverage-summary-path: ./packages/core/coverage/coverage-summary.json
+          coverage-path-prefix: packages/core/src/
+      # Self-hosted coverage badges (see README): write each package's line
+      # coverage to its own file in a secret gist that shields.io renders. Non-PR
+      # events only (main pushes / manual runs). The badge steps run in sequence,
+      # so their writes to the shared gist don't race.
+      - name: Extract coverage percentages
+        if: github.event_name != 'pull_request'
+        id: coverage
+        run: |
+          for pkg in core react webcomponents lit; do
+            pct=$(node -p "require('./packages/${pkg}/coverage/coverage-summary.json').total.lines.pct")
+            echo "${pkg}=${pct}" >> "$GITHUB_OUTPUT"
+          done
+      - name: Coverage badge — @bem-broom/core
+        if: github.event_name != 'pull_request'
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: ${{ vars.COVERAGE_GIST_ID }}
+          filename: bem-broom-core-coverage.json
+          label: coverage
+          message: ${{ steps.coverage.outputs.core }}%
+          namedLogo: jest
+          valColorRange: ${{ steps.coverage.outputs.core }}
+          minColorRange: 50
+          maxColorRange: 95
+      - name: Coverage badge — @bem-broom/react
+        if: github.event_name != 'pull_request'
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: ${{ vars.COVERAGE_GIST_ID }}
+          filename: bem-broom-react-coverage.json
+          label: coverage
+          message: ${{ steps.coverage.outputs.react }}%
+          namedLogo: jest
+          valColorRange: ${{ steps.coverage.outputs.react }}
+          minColorRange: 50
+          maxColorRange: 95
+      - name: Coverage badge — @bem-broom/webcomponents
+        if: github.event_name != 'pull_request'
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: ${{ vars.COVERAGE_GIST_ID }}
+          filename: bem-broom-webcomponents-coverage.json
+          label: coverage
+          message: ${{ steps.coverage.outputs.webcomponents }}%
+          namedLogo: jest
+          valColorRange: ${{ steps.coverage.outputs.webcomponents }}
+          minColorRange: 50
+          maxColorRange: 95
+      - name: Coverage badge — @bem-broom/lit
+        if: github.event_name != 'pull_request'
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: ${{ vars.COVERAGE_GIST_ID }}
+          filename: bem-broom-lit-coverage.json
+          label: coverage
+          message: ${{ steps.coverage.outputs.lit }}%
+          namedLogo: jest
+          valColorRange: ${{ steps.coverage.outputs.lit }}
+          minColorRange: 50
+          maxColorRange: 95

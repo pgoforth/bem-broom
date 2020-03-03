@@ -1,0 +1,33 @@
+.badge {
+	border-radius: 0.5rem;
+	border-style: solid;
+	border-width: 1px;
+	display: inline-block;
+	padding: 0.5rem 1rem;
+}
+
+.badge--clickable {
+	cursor: pointer;
+}
+
+.app--mode_light {
+	& .badge--tone_info {
+		background-color: var(--color-info-light);
+		color: var(--color-info-text-light);
+	}
+	& .badge--tone_success {
+		background-color: var(--color-success-light);
+		color: var(--color-success-text-light);
+	}
+}
+
+.app--mode_dark {
+	& .badge--tone_info {
+		background-color: var(--color-info-dark);
+		color: var(--color-info-text-dark);
+	}
+	& .badge--tone_success {
+		background-color: var(--color-success-dark);
+		color: var(--color-success-text-dark);
+	}
+}

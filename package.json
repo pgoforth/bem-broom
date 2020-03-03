@@ -1,48 +1,46 @@
 {
-  "name": "bem-broom",
-  "version": "0.1.0",
-  "description": "Utility for generating BEM class names using JS objects",
-  "main": "dist/bem-broom.js",
-  "author": "Preston Goforth",
-  "license": "MIT",
-  "engines": {
-    "node": ">=6",
-    "npm": ">=3"
-  },
-  "scripts": {
-    "build": "webpack",
-    "test": "jest",
-    "test:ci": "npm run lint && jest --coverage --coverageReporters=text-lcov | coveralls",
-    "test:watch": "jest --watch --coverage",
-    "test:cov": "jest --coverage",
-    "lint": "eslint ."
-  },
-  "devDependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/plugin-proposal-class-properties": "^7.0.0",
-    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
-    "babel-core": "^7.0.0-0",
-    "babel-eslint": "^9.0.0",
-    "babel-jest": "^23.4.2",
-    "babel-loader": "^8.0.0",
-    "babel-plugin-webpack-alias": "^2.1.2",
-    "classnames": "^2.2.5",
-    "copy-webpack-plugin": "^4.5.2",
-    "coveralls": "^3.0.2",
-    "cross-env": "^4.0.0",
-    "css-loader": "^1.0.0",
-    "eslint": "^4.7.2",
-    "eslint-plugin-jest": "^21.22.0",
-    "file-loader": "^1.1.11",
-    "html-webpack-plugin": "^3.2.0",
-    "jest": "^23.3.5",
-    "rimraf": "^2.5.4",
-    "sinon": "^1.17.7",
-    "unminified-webpack-plugin": "^2.0.0",
-    "url-loader": "^1.1.0",
-    "webpack": "^4.16.5",
-    "webpack-bundle-analyzer": "^2.13.1",
-    "webpack-cli": "^3.1.0"
-  }
+	"name": "bem-broom",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"description": "Monorepo for @bem-broom/* — BEM class-name utilities for building component libraries",
+	"author": "Preston Goforth",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pgoforth/bem-broom.git"
+	},
+	"workspaces": [
+		"packages/*"
+	],
+	"scripts": {
+		"build": "npm run build --workspaces --if-present",
+		"test": "npm run test --workspaces --if-present",
+		"test:cov": "npm run test:cov --workspaces --if-present",
+		"test:ci": "npm run build && npm run lint && npm run test:cov --workspaces --if-present",
+		"lint": "eslint --max-warnings=0",
+		"lint:fix": "npm run lint -- --fix",
+		"prettier": "prettier \"**/*.{js,cjs,mjs,json,sass,scss,css}\" --check",
+		"prettier:fix": "npm run prettier -- --write",
+		"docs:install": "npm --prefix docs ci",
+		"docs:dev": "npm --prefix docs run dev",
+		"docs:build": "npm run build && npm --prefix docs run build",
+		"docs:preview": "npm --prefix docs run preview",
+		"bench:install": "npm --prefix benchmark install",
+		"bench": "npm run build --workspace @bem-broom/core && npm --prefix benchmark run bench",
+		"examples:install": "npm --prefix examples install",
+		"examples:dev": "npm run build && npm --prefix examples run dev",
+		"examples:build": "npm run build && npm --prefix examples run build",
+		"size": "npm run size --workspaces --if-present"
+	},
+	"devDependencies": {
+		"@babel/eslint-parser": "^8.0.1",
+		"@eslint/json": "^2.0.1",
+		"eslint": "^10.6.0",
+		"eslint-plugin-no-unsanitized": "^4.1.5",
+		"eslint-plugin-prettier": "^5.5.6",
+		"eslint-plugin-security": "^4.0.1",
+		"globals": "^17.7.0",
+		"prettier": "^3.6.0"
+	}
 }

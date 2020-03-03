@@ -22,6 +22,7 @@ _site
 .project
 .settings
 .tmproj
+.vscode
 *.esproj
 *.sublime-project
 *.sublime-workspace
@@ -31,3 +32,10 @@ Thumbs.db
 # Folders to ignore
 node_modules
 coverage
+dist
+
+# Astro (docs site) build cache
+.astro
+
+# Generated API reference — starlight-typedoc regenerates it on every build
+docs/src/content/docs/*/api/

@@ -1,0 +1,4 @@
+# Generated output
+dist
+coverage
+**/docs/api
