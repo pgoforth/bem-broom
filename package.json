@@ -14,7 +14,7 @@
 		"packages/*"
 	],
 	"scripts": {
-		"build": "npm run build --workspaces --if-present",
+		"build": "npm run build -w @bem-broom/core && npm run build -w @bem-broom/webcomponents && npm run build -w @bem-broom/react && npm run build -w @bem-broom/lit",
 		"test": "npm run test --workspaces --if-present",
 		"test:cov": "npm run test:cov --workspaces --if-present",
 		"test:ci": "npm run build && npm run lint && npm run test:cov --workspaces --if-present",
