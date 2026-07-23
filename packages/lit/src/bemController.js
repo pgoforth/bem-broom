@@ -3,6 +3,8 @@ import {
 	bemBlockContext,
 	bemConfigContext,
 	buildClassName,
+	collectDecoratedModifiers,
+	registerBemApply,
 } from '@bem-broom/webcomponents';
 import { ContextConsumer } from '@lit/context';
 
@@ -38,6 +40,9 @@ export class BemController {
 			context: bemConfigContext,
 			subscribe: true,
 		});
+		// A `@modifier` set on the host requests an update so `className` — read
+		// in the host's render — recomputes.
+		registerBemApply(host, () => host.requestUpdate());
 	}
 
 	/** @returns {string} The computed BEM class name. */
@@ -53,6 +58,7 @@ export class BemController {
 				/** @type {unknown} */ (this.host)
 			)[name];
 		}
+		Object.assign(modifierValues, collectDecoratedModifiers(this.host));
 		return buildClassName({
 			element: this.element,
 			resolvedBlock,

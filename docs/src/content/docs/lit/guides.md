@@ -68,6 +68,47 @@ class Title extends LitElement {
 }
 ```
 
+## `@modifier(...)`
+
+Instead of (or alongside) the `modifiers: [...]` config, mark an
+**auto-accessor**, **setter**, or **field** as a modifier by decorating it. The
+value flows into the component's class(es) with the usual coercion (`true` →
+`--name`, an array → one class per item, `false`/`null`/`undefined` → skipped,
+otherwise → `--name_value`).
+
+```js
+import { LitElement, html } from 'lit';
+import { customElement } from 'lit/decorators.js';
+import { bem, modifier } from '@bem-broom/lit';
+
+@customElement('bb-card')
+@bem({ element: 'card' })
+class Card extends LitElement {
+	@modifier accessor active = false;
+	@modifier((n) => n > 5 && 'many') accessor count = 0;
+	render() {
+		return html`<slot></slot>`;
+	}
+}
+// el.active = true; el.count = 8  →  class="card card--active card--count_many"
+```
+
+Both arguments are optional — `@modifier(name?, processor?)`. A function first
+argument is the **processor** (maps the value to a string, boolean, or string
+array); a string is the modifier **name**; bare `@modifier` uses the member name.
+
+Auto-accessors and setters re-apply on change; a plain **field** is read once at
+apply time (static). `@modifier` re-renders on set by itself, so it does **not**
+imply `@property` — for an **attribute-driven** modifier, stack the two:
+`@property({ type: Boolean }) @modifier() accessor active`. It works with both
+`@bem` and `BemController`, coexists with the `modifiers: [...]` config, and
+applies to public members only.
+
+:::caution[Requires a build step]
+`@modifier` uses standard (TC39) decorators — same as `@bem` — so it needs
+TS ≥5.2 or the `@babel/plugin-proposal-decorators` `2023-11` transform.
+:::
+
 ## Contexts
 
 `bemBlockContext` carries the current block (provided automatically by `@bem`);

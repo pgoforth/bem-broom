@@ -4,6 +4,8 @@ import {
 	bemBlockContext,
 	bemConfigContext,
 	buildClassName,
+	collectDecoratedModifiers,
+	registerBemApply,
 } from '@bem-broom/webcomponents';
 
 /**
@@ -43,6 +45,7 @@ function setupBem(host, config) {
 				/** @type {unknown} */ (host)
 			)[name];
 		}
+		Object.assign(modifierValues, collectDecoratedModifiers(host));
 		const className = buildClassName({
 			element: config.element,
 			resolvedBlock,
@@ -60,6 +63,8 @@ function setupBem(host, config) {
 	};
 
 	host.addController({ hostConnected: apply, hostUpdated: apply });
+	// A `@modifier` set on the host re-applies the host's BEM classes.
+	registerBemApply(host, apply);
 }
 
 /**

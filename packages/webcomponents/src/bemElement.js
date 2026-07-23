@@ -1,5 +1,6 @@
 // @ts-check
 import { bemBlockContext, bemConfigContext } from './context.js';
+import { collectDecoratedModifiers, registerBemApply } from './modifiers.js';
 import { ContextProvider } from '@lit/context';
 import { buildClassName } from './buildClassName.js';
 import { consumeContext } from './consumeContext.js';
@@ -60,6 +61,8 @@ function setupBem(host, config) {
 			// eslint-disable-next-line security/detect-object-injection -- allowlisted attribute name
 			modifierValues[name] = raw === null ? false : raw === '' ? true : raw;
 		}
+		// `@modifier`-declared members (accessors/setters/fields) merge in on top.
+		Object.assign(modifierValues, collectDecoratedModifiers(host));
 		const className = buildClassName({
 			element: config.element,
 			resolvedBlock,
@@ -78,6 +81,8 @@ function setupBem(host, config) {
 
 	blockConsumer = consumeContext(host, bemBlockContext, apply);
 	configConsumer = consumeContext(host, bemConfigContext, apply);
+	// Let `@modifier` setters re-apply the host's classes when they change.
+	registerBemApply(host, apply);
 
 	return {
 		connected() {

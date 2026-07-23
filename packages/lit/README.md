@@ -70,6 +70,53 @@ class Card extends LitElement {
 | `modifiers` | Reactive-property names promoted to modifiers (`true` → `--name`, array → one class per item, else → `--name_String(value)`). |
 | `block` | Block for the host's own class — a string, or `false` for a root (default: inherit from context). Descendants always re-root to `element`. |
 
+## `@modifier(...)` — declare a member as a modifier
+
+Instead of (or alongside) the `modifiers: [...]` config, mark an
+**auto-accessor**, **setter**, or **field** as a BEM modifier by decorating it.
+Its value flows into the component's class(es) with the usual coercion (`true` →
+`--name`, an array → one class per item, `false`/`null`/`undefined` → skipped,
+otherwise → `--name_value`).
+
+```js
+import { LitElement, html } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { bem, modifier } from '@bem-broom/lit';
+
+@customElement('bb-card')
+@bem({ element: 'card' })
+class Card extends LitElement {
+	@modifier accessor active = false; // name = "active"
+	@modifier((n) => n > 5 && 'many') accessor count = 0; // processor
+	render() {
+		return html`<slot></slot>`;
+	}
+}
+// el.active = true; el.count = 8  →  class="card card--active card--count_many"
+```
+
+Both arguments are optional:
+
+| Form | Modifier name | Value |
+| --- | --- | --- |
+| `@modifier` / `@modifier()` | member name | the member's value |
+| `@modifier(processor)` | member name | `processor(value)` |
+| `@modifier(name)` | `name` | the member's value |
+| `@modifier(name, processor)` | `name` | `processor(value)` |
+
+The **processor** maps the member's value to a BEM value (string, boolean, or
+string array).
+
+- **Auto-accessors** and **setters** re-apply when they change; a plain
+  **field** is read once at apply time (**static**) — a default or a value fixed
+  in a subclass (e.g. `SubmitButton extends Button` with `type = 'submit'`).
+- `@modifier` re-renders on set by itself, so it does **not** imply
+  `@property` — it triggers on JS assignment (`el.active = true`). For an
+  **attribute-driven** modifier, stack `@property` (which owns the attribute and
+  its type): `@property({ type: Boolean }) @modifier() accessor active`.
+- Works with `@bem` and with `BemController`; coexists with the
+  `modifiers: [...]` config. Public members only.
+
 ## `BemController` — the low-level builder
 
 The analog of `useBem`: reads the block from context and computes a class name

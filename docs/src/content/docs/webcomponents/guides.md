@@ -61,6 +61,39 @@ class Card extends BemElement(HTMLElement, {
 customElements.define('bb-card', Card);
 ```
 
+## `@modifier(...)`
+
+Instead of (or alongside) the `modifiers: [...]` config, mark an
+**auto-accessor**, **setter**, or **field** as a modifier by decorating it. The
+value flows into the host's class(es) with the usual coercion (`true` → `--name`,
+an array → one class per item, `false`/`null`/`undefined` → skipped, otherwise →
+`--name_value`).
+
+```js
+import { bem, modifier } from '@bem-broom/webcomponents';
+
+@bem({ element: 'card' })
+class Card extends HTMLElement {
+	@modifier accessor active = false; // name = "active"
+	@modifier('loading') accessor isLoading = false; // explicit name
+	@modifier((n) => n > 5 && 'many') accessor count = 0; // processor
+	@modifier('bp', (list) => list) accessor bps = []; // name + processor
+}
+customElements.define('bb-card', Card);
+// el.active = true; el.count = 8  →  class="card card--active card--count_many"
+```
+
+Both arguments are optional — `@modifier(name?, processor?)`. When the first is
+a function it's the **processor** (maps the value to a string, boolean, or string
+array); when it's a string it's the modifier **name**. Bare `@modifier` uses the
+member name.
+
+Auto-accessors and setters re-apply on change. A plain **field** is read once at
+apply time (static) — use it for a default or a value fixed in a subclass (e.g.
+`SubmitButton extends Button` with `type = 'submit'`); changing a field after
+render won't re-apply. It's JS-property-driven, coexists with the
+`modifiers: [...]` config, and works on public members only.
+
 ## Contexts
 
 `bemBlockContext` carries the current block (provided automatically by `@bem` /

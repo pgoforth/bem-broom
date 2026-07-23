@@ -3,3 +3,8 @@ export { BemElement } from './bemElement.js';
 export { bemBlockContext, bemConfigContext } from './context.js';
 export { buildClassName } from './buildClassName.js';
 export { consumeContext } from './consumeContext.js';
+export {
+	collectDecoratedModifiers,
+	modifier,
+	registerBemApply,
+} from './modifiers.js';

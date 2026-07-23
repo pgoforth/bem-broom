@@ -70,6 +70,51 @@ use one.
 | `modifiers` | Observed attribute names. A present boolean attribute → `--name`; a valued attribute → `--name_value`; absent → skipped. |
 | `block` | Block for the host's own class — a string, or `false` for a root (default: inherit from context). Descendants always re-root to `element`. |
 
+## `@modifier(...)` — declare a member as a modifier
+
+Instead of (or alongside) the `modifiers: [...]` config, mark an
+**auto-accessor**, **setter**, or **field** as a BEM modifier by decorating it.
+Its value flows into the host's class(es) with the usual coercion (`true` →
+`--name`, an array → one class per item, `false`/`null`/`undefined` → skipped,
+otherwise → `--name_value`).
+
+```js
+import { bem, modifier } from '@bem-broom/webcomponents';
+
+@bem({ element: 'card' })
+class Card extends HTMLElement {
+	@modifier accessor active = false; // name = "active"
+	@modifier('loading') accessor isLoading = false; // explicit name
+	@modifier((n) => n > 5 && 'many') accessor count = 0; // processor
+	@modifier('bp', (list) => list) accessor bps = []; // name + processor
+}
+customElements.define('bb-card', Card);
+// el.active = true; el.count = 8  →  class="card card--active card--count_many"
+```
+
+Both arguments are optional:
+
+| Form | Modifier name | Value |
+| --- | --- | --- |
+| `@modifier` / `@modifier()` | member name | the member's value |
+| `@modifier(processor)` | member name | `processor(value)` |
+| `@modifier(name)` | `name` | the member's value |
+| `@modifier(name, processor)` | `name` | `processor(value)` |
+
+The **processor** maps the member's value to a BEM value (string, boolean, or
+string array) — that's how arbitrary types are inferred into what the class
+builder understands.
+
+- **Auto-accessors** and **setters** re-apply the host's classes when they
+  change.
+- A plain **field** is read once at apply time (**static**): good for a default
+  or a value fixed in a subclass (e.g. `SubmitButton extends Button` with
+  `type = 'submit'`), but changing a field after render won't re-apply on its
+  own — use an auto-accessor for reactive values.
+
+`@modifier` is JS-property-driven and works next to the attribute-driven
+`modifiers: [...]` config; both merge. Public members only.
+
 ## `BemElement(Base, config)` — base mixin
 
 The decorator-free form, for projects that don't compile decorators (e.g.
