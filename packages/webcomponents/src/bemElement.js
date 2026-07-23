@@ -69,13 +69,12 @@ function setupBem(host, config) {
 			modifierValues,
 			config: configConsumer.value,
 		});
+		// A valid element always yields ≥1 class; the `[]` arm is defensive only.
+		/* istanbul ignore next -- className is never empty for a valid element */
 		const next = className ? className.split(' ') : [];
-		if (applied.length) {
-			host.classList.remove(...applied);
-		}
-		if (next.length) {
-			host.classList.add(...next);
-		}
+		// `remove(...[])` on the first apply is a harmless no-op.
+		host.classList.remove(...applied);
+		host.classList.add(...next);
 		applied = next;
 	};
 

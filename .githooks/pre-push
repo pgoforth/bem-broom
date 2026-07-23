@@ -1,0 +1,66 @@
+#!/usr/bin/env sh
+#
+# Pre-push: lint and test only what's being pushed — not the whole repo.
+#
+# "Changed" = the diff between this branch's upstream (its last-known remote
+# state) and HEAD. For a brand-new branch with no upstream, we fall back to
+# where it diverged from the default branch; if even that can't be found, we
+# run the full lint + test suite to be safe.
+
+# GUI git clients (and other non-login shells) often invoke hooks without a
+# node version manager's PATH, so node/npm aren't found. Load them the way
+# husky does — via ~/.config/husky/init.sh — if node isn't already available.
+if ! command -v npm >/dev/null 2>&1; then
+	init="${XDG_CONFIG_HOME:-$HOME/.config}/husky/init.sh"
+	[ -f "$init" ] && . "$init"
+fi
+if ! command -v npm >/dev/null 2>&1; then
+	echo "pre-push: node/npm not on PATH — cannot run lint/test." >&2
+	echo "  Add node to your hook PATH (e.g. via ~/.config/husky/init.sh)," >&2
+	echo "  or bypass once with: git push --no-verify" >&2
+	exit 1
+fi
+
+# Run from the repo root so relative paths resolve regardless of caller cwd.
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+base="$(git rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null || true)"
+if [ -z "$base" ]; then
+	base="$(git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main 2>/dev/null || true)"
+fi
+
+if [ -z "$base" ]; then
+	echo "pre-push: no base ref found — running full lint + tests."
+	npm run lint && npm run test --workspaces --if-present
+	exit $?
+fi
+
+# Changed JS sources under packages/ (added/copied/modified/renamed).
+changed="$(git diff --name-only --diff-filter=ACMR "$base" HEAD -- packages | grep -E '\.(js|jsx|cjs|mjs)$' || true)"
+
+if [ -z "$changed" ]; then
+	echo "pre-push: no changed package sources — nothing to lint or test."
+	exit 0
+fi
+
+# Cross-package tests import a dependency's built dist; build once if it's
+# missing (e.g. a fresh clone) so those imports resolve.
+if [ ! -d packages/core/dist ] || [ ! -d packages/webcomponents/dist ]; then
+	echo "pre-push: package dist missing — building first."
+	npm run build || exit 1
+fi
+
+echo "pre-push: linting changed files"
+# shellcheck disable=SC2086
+echo "$changed" | xargs node_modules/.bin/eslint --no-warn-ignored --max-warnings=0 || exit 1
+
+status=0
+for pkg in core webcomponents react lit; do
+	if echo "$changed" | grep -q "^packages/$pkg/"; then
+		echo "pre-push: testing @bem-broom/$pkg (changed since $base)"
+		npm run test -w "@bem-broom/$pkg" -- \
+			--changedSince="$base" --passWithNoTests || status=1
+	fi
+done
+
+exit "$status"

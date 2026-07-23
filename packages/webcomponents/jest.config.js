@@ -1,5 +1,7 @@
 export default {
 	coverageReporters: ['json-summary', 'text'],
+	// The barrel is pure re-exports (no logic); the public-API test guards it.
+	coveragePathIgnorePatterns: ['index\\.js$'],
 	displayName: 'webcomponents',
 	testEnvironment: 'jsdom',
 	rootDir: './',
